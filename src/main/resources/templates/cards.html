@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="_bootstrap::link">
+    <meta charset="UTF-8">
+    <title>Карты</title>
+</head>
+<body>
+<header th:insert="_header"></header>
+<div class="container">
+    <h2>Мои карты</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Номер карты</th>
+            <th>Тип карты</th>
+            <th>Срок действия</th>
+            <th>CVV</th>
+            <th>Баланс</th>
+            <th>Статус</th>
+            <th>Дата выпуска</th>
+            <th>Дата обновления</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="card : ${cardList}">
+            <td th:text="${card.cardNumber}"></td>
+            <td th:text="${card.cardType}"></td>
+            <td th:text="${card.expirationDate}"></td>
+            <td th:text="${card.cvv}"></td>
+            <td th:text="${card.balance}"></td>
+            <td th:text="${card.status}"></td>
+            <td th:text="${card.issuedAt}"></td>
+            <td th:text="${card.updatedAt}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- Transfer Funds Button -->
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transferModal">
+        Перевести средства
+    </button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transferModalLabel">Перевод средств</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/transfer}" method="post">
+                    <div class="mb-3">
+                        <label for="fromCard" class="form-label">Источник (Номер карты)</label>
+                        <input type="text" class="form-control" id="fromCard" name="fromCard" placeholder="Введите номер карты-источника" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="toCard" class="form-label">Получатель (Номер карты)</label>
+                        <input type="text" class="form-control" id="toCard" name="toCard" placeholder="Введите номер карты-получателя" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Сумма</label>
+                        <input type="number" class="form-control" id="amount" name="amount" placeholder="Введите сумму перевода" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Перевести</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="_bootstrap::script"></th:block>
+</body>
+</html>

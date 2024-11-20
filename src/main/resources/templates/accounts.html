@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="_bootstrap::link">
+    <meta charset="UTF-8">
+    <title>счета</title>
+</head>
+<body>
+<header th:insert="_header"></header>
+<div class="container">
+    <h2>Мои счета</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Номер счета</th>
+            <th>Тип счета</th>
+            <th>Баланс</th>
+            <th>Статус</th>
+            <th>Дата выпуска</th>
+            <th>Дата обновления</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="account : ${accountList}">
+            <td th:text="${account.accountNumber}"></td>
+            <td th:text="${account.accountType}"></td>
+            <td th:text="${account.balance}"></td>
+            <td th:text="${account.currency}"></td>
+            <td th:text="${account.status}"></td>
+            <td th:text="${account.createdAt}"></td>
+            <td th:text="${account.updatedAt}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <!-- Transfer Funds Button -->
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transferModal">
+        Перевести средства
+    </button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transferModalLabel">Перевод средств</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/transfer}" method="post">
+                    <div class="mb-3">
+                        <label for="fromaccount" class="form-label">Источник (Номер счета)</label>
+                        <input type="text" class="form-control" id="fromaccount" name="fromaccount" placeholder="Введите номер счета-источника" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="toaccount" class="form-label">Получатель (Номер счета)</label>
+                        <input type="text" class="form-control" id="toaccount" name="toaccount" placeholder="Введите номер счета-получателя" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">Сумма</label>
+                        <input type="number" class="form-control" id="amount" name="amount" placeholder="Введите сумму перевода" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Перевести</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:insert="_bootstrap::script"></th:block>
+</body>
+</html>
