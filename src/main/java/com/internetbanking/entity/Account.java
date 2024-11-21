@@ -1,7 +1,10 @@
 package com.internetbanking.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -26,6 +29,7 @@ public class Account {
     private String accountType;
 
     @Column(nullable = false, precision = 15, scale = 2)
+    @DecimalMin(value = "0.00", inclusive = false)
     private BigDecimal balance;
 
     @Column(nullable = false, length = 3)
@@ -43,9 +47,11 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Card> cards;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 

@@ -2,7 +2,6 @@ package com.internetbanking.controller;
 
 import com.internetbanking.entity.User;
 import com.internetbanking.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
-import java.io.IOException;
 
 @Controller
 public class AuthController {

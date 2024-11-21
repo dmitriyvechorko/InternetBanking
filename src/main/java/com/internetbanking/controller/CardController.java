@@ -8,7 +8,6 @@ import com.internetbanking.service.AccountService;
 import com.internetbanking.service.CardService;
 import com.internetbanking.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -16,10 +15,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Controller
@@ -42,13 +41,10 @@ public class CardController {
 
         User currentUser = getCurrentUser();
 
-        // Get list of accounts for the current user
         List<Account> accounts = accountService.findAccountsByUser(currentUser);
 
-        // Get cards for the accounts
         List<Card> cards = cardService.findCardsByAccounts(accounts);
 
-        // Convert cards to DTOs if necessary
         List<CardDto> cardDtos = cards.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -70,30 +66,49 @@ public class CardController {
     }
 
     @GetMapping("/add")
-    public String showAddCard(Model model) {
-        model.addAttribute("card", new Card());
-        return "add-card";
+    public String showAddCardForm(Model model) {
+        User currentUser = getCurrentUser();
+        List<Account> accounts = accountService.findAccountsByUser(currentUser);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("card", new CardDto());
+        return "add_card";
     }
 
     @PostMapping("/add")
-    public String addCard(@ModelAttribute Card card) {
-        cardService.createCard(card);
+    public String addCard(@ModelAttribute("card") Card card, @RequestParam("accountId") Long accountId) {
+        Account account = accountService.findAccountById(accountId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid account ID"));
+        String generatedCardNumber = generateCardNumber();
+        String generatedCvv = generateCvv();
+        LocalDateTime expirationDate = calculateExpirationDate();
+
+        card.setCardNumber(generatedCardNumber);
+        card.setCvv(generatedCvv);
+
+        card.setExpirationDate(expirationDate);
+        card.setAccount(account);
+        cardService.save(card);
         return "redirect:/cards";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Card> updateCard(@PathVariable Long id, @RequestBody Card updatedCard) {
-        return cardService.updateCard(id, updatedCard)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    private String generateCardNumber() {
+        Random random = new Random();
+        StringBuilder cardNumber = new StringBuilder(16);
+        for (int i = 0; i < 16; i++) {
+            int digit = random.nextInt(10);
+            cardNumber.append(digit);
+        }
+        return cardNumber.toString();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCard(@PathVariable Long id) {
-        if (cardService.deleteCard(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    private String generateCvv() {
+        Random random = new Random();
+        int cvv = random.nextInt(900) + 100; // Генерируем случайное число от 100 до 999
+        return String.valueOf(cvv);
+    }
+
+    private LocalDateTime calculateExpirationDate() {
+        return LocalDateTime.now().plusYears(4); //
     }
 
     @PostMapping("/transfer")
@@ -107,7 +122,7 @@ public class CardController {
 
         if (!fromCardOpt.isPresent() || !toCardOpt.isPresent()) {
             model.addAttribute("error", "Одна из карт не найдена");
-            return "errorPage"; // Page to show error if card not found
+            return "errorPage";
         }
         Card fromCard = fromCardOpt.get();
         Card toCard = toCardOpt.get();
@@ -129,9 +144,12 @@ public class CardController {
         cardDto.setExpirationDate(card.getExpirationDate());
         cardDto.setCvv(card.getCvv());
         cardDto.setBalance(card.getBalance());
-        cardDto.setStatus(card.getStatus());
+        cardDto.setStatus(String.valueOf(card.getStatus()));
         cardDto.setIssuedAt(card.getIssuedAt());
         cardDto.setUpdatedAt(card.getUpdatedAt());
+        if (card.getAccount() != null) {
+            cardDto.setAccountId(card.getAccount().getId());
+        }
         return cardDto;
 
     }

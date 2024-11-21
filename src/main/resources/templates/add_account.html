@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="_bootstrap::link">
+    <meta charset="UTF-8">
+    <title>Добавить карту</title>
+</head>
+<body>
+<header th:insert="_header"></header>
+<div class="container">
+    <div class="row justify-content-center min-vh-100">
+        <div class="col-4 align-self-center">
+            <form th:action="@{/accounts/add}" th:object="${account}" method="post">
+
+                <div class="mb-3">
+                    <label for="accountType" class="form-label">Тип счёта</label>
+                    <select name="accountType" th:field="*{accountType}" class="form-select" id="accountType" required>
+                        <option value="" disabled selected>Выберите тип счёта</option>
+                        <option value="Debit">Current</option>
+                        <option value="Savings">Savings</option>
+                        <option value="Credit">Credit</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="currency" class="form-label">Тип счёта</label>
+                    <select name="currency" th:field="*{currency}" class="form-select" id="currency" required>
+                        <option value="" disabled selected>Выберите валюту</option>
+                        <option value="RUB">RUB</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Добавить cчёт</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

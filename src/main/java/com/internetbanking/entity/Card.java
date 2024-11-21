@@ -1,11 +1,14 @@
 package com.internetbanking.entity;
 
+import com.internetbanking.enums.CardStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 
 @Data
@@ -32,19 +35,27 @@ public class Card {
     @Column(name = "cvv", nullable = false, length = 3)
     private String cvv;
 
-    @Transient
+    @Column(nullable = false, precision = 15, scale = 2)
+    @DecimalMin(value = "0.00", inclusive = false)
     private BigDecimal balance;
 
-    @Column(name = "status", nullable = false, length = 20)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private CardStatus status;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
-    @Column(name = "issued_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "issued_at", updatable = false)
     private LocalDateTime issuedAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.status = CardStatus.ACTIVE;
+    }
 }

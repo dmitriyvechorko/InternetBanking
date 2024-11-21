@@ -1,5 +1,6 @@
 package com.internetbanking.service;
 
+import com.internetbanking.entity.Account;
 import com.internetbanking.entity.User;
 import com.internetbanking.exception.NotFoundException;
 import com.internetbanking.repository.UserRepository;
@@ -60,7 +61,6 @@ public class UserService implements UserDetailsService {
         }
         throw new UsernameNotFoundException(username);
     }
-
 
     public User findById(Long id) {
         return userRepository.findById(id)

@@ -4,12 +4,12 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Data
 public class CardDto {
 
     private Long id;
+    private Long accountId;
     private String cardNumber;
     private String cardType;
     private LocalDateTime expirationDate;

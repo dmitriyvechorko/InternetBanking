@@ -84,8 +84,6 @@ public class User implements UserDetails {
 
     @PrePersist
     protected void onCreate() {
-        if (this.role == null) {
-            this.role = Role.USER;
-        }
+        this.role = Role.USER;
     }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long> {
-    Optional<Card> findByCardNumber(String cvv);
+    Optional<Card> findByCardNumber(String cardNumber);
 
     List<Card> findByAccountIn(List<Account> accounts);
 }

@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,19 @@ public class CardService {
 
     public Optional<Card> findCardById(Long id) {
         return cardRepository.findById(id);
+    }
+
+    public void save(Card card) {
+        LocalDateTime now = LocalDateTime.now();
+        card.setIssuedAt(now);
+        card.setUpdatedAt(now);
+        card.setExpirationDate(now.plusYears(4));
+        Account account = card.getAccount();
+        if (account != null) {
+            card.setBalance(account.getBalance());
+        }
+
+        cardRepository.save(card);
     }
 
     @Transactional
@@ -69,6 +83,7 @@ public class CardService {
     public Optional<Card> findByCardNumber(String cardNumber) {
         return cardRepository.findByCardNumber(cardNumber);
     }
+
     public List<Account> findAccountsByUser(User user) {
         return accountRepository.findByUser(user);
     }
