@@ -14,7 +14,7 @@ public class CardDto {
     private String cardType;
     private LocalDateTime expirationDate;
     private String cvv;
-    private BigDecimal balance;
+    private String balance;
     private String status;
     private LocalDateTime issuedAt;
     private LocalDateTime updatedAt;

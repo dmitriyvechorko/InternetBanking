@@ -35,8 +35,7 @@ public class Card {
     @Column(name = "cvv", nullable = false, length = 3)
     private String cvv;
 
-    @Column(nullable = false, precision = 15, scale = 2)
-    @DecimalMin(value = "0.00", inclusive = false)
+    @Column(precision = 15, scale = 2, columnDefinition = "DECIMAL(15,2) DEFAULT 0.00")
     private BigDecimal balance;
 
     @Enumerated(EnumType.STRING)

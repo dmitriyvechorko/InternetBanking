@@ -21,7 +21,25 @@ public class TransactionService {
     private AccountRepository accountRepository;
 
     @Transactional
-    public void transferFunds(Long fromCardId, Long toCardId, BigDecimal amount) {
+    public void transferFunds(Long fromAccountId, Long toAccountId, BigDecimal amount) {
+        Account fromAccount = accountRepository.findById(fromAccountId)
+                .orElseThrow(() -> new EntityNotFoundException("Account not found: " + fromAccountId));
+        Account toAccount = accountRepository.findById(toAccountId)
+                .orElseThrow(() -> new EntityNotFoundException("Account not found: " + toAccountId));
+
+        if (fromAccount.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient funds");
+        }
+
+        fromAccount.setBalance(fromAccount.getBalance().subtract(amount));
+        toAccount.setBalance(toAccount.getBalance().add(amount));
+
+        accountRepository.save(fromAccount);
+        accountRepository.save(toAccount);
+    }
+
+    @Transactional
+    public void transferCardFunds(Long fromCardId, Long toCardId, BigDecimal amount) {
         Card fromCard = cardRepository.findById(fromCardId)
                 .orElseThrow(() -> new EntityNotFoundException("Card not found: " + fromCardId));
         Card toCard = cardRepository.findById(toCardId)
@@ -39,5 +57,18 @@ public class TransactionService {
 
         accountRepository.save(fromAccount);
         accountRepository.save(toAccount);
+    }
+    @Transactional
+    public void depositFunds(Long accountId, BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be greater than zero");
+        }
+
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new EntityNotFoundException("Account not found: " + accountId));
+
+        account.setBalance(account.getBalance().add(amount));
+
+        accountRepository.save(account);
     }
 }

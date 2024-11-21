@@ -7,10 +7,9 @@ create table users
     surname           VARCHAR(255),
     patronymic        VARCHAR(255),
     birth_date        TIMESTAMPTZ,
-    email             VARCHAR(100)       NOT NULL,
+    email             VARCHAR(100),
     mobile_phone      VARCHAR(15),
     address           VARCHAR(255),
-    registration_date TIMESTAMPTZ        NOT NULL,
     status            VARCHAR(20) CHECK (status in ('Active', 'Blocked', 'Deleted')),
     role              VARCHAR(255) DEFAULT 'USER',
     primary key (id)

@@ -4,6 +4,7 @@ import com.internetbanking.dto.AccountDto;
 import com.internetbanking.entity.Account;
 import com.internetbanking.entity.User;
 import com.internetbanking.service.AccountService;
+import com.internetbanking.service.TransactionService;
 import com.internetbanking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -23,9 +25,12 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    private final TransactionService transactionService;
+
     @Autowired
-    public AccountController(AccountService accountService, UserService userService) {
+    public AccountController(AccountService accountService, UserService userService, TransactionService transactionService) {
         this.accountService = accountService;
+        this.transactionService = transactionService;
     }
 
     @GetMapping("")
@@ -64,10 +69,40 @@ public class AccountController {
         String generatedAccountNumber = generateAccountNumber();
         account.setAccountNumber(generatedAccountNumber);
         account.setStatus("Active");
+        account.setBalance(BigDecimal.ZERO);
         account.setUser(currentUser);
         accountService.save(account);
         return "redirect:/accounts";
     }
+
+    @PostMapping("/transfer")
+    public String transferFunds(@RequestParam("fromAccountId") Long fromAccountId,
+                                @RequestParam("toAccountId") Long toAccountId,
+                                @RequestParam("amount") BigDecimal amount) {
+        try {
+            if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Сумма перевода должна быть больше нуля");
+            }
+
+            transactionService.transferFunds(fromAccountId, toAccountId, amount);
+
+            return "redirect:/accounts";
+        } catch (Exception e) {
+            return "redirect:/accounts?transferError=" + e.getMessage();
+        }
+    }
+
+    @PostMapping("/deposit")
+    public String depositFunds(@RequestParam("accountId") Long accountId,
+                               @RequestParam("amount") BigDecimal amount) {
+        try {
+            transactionService.depositFunds(accountId, amount);
+            return "redirect:/accounts";
+        } catch (Exception e) {
+            return "redirect:/accounts?error=" + e.getMessage();
+        }
+    }
+
 
     private String generateAccountNumber() {
         Random random = new Random();
@@ -84,7 +119,7 @@ public class AccountController {
         dto.setId(account.getId());
         dto.setAccountNumber(account.getAccountNumber());
         dto.setAccountType(account.getAccountType());
-        dto.setBalance(account.getBalance());
+        dto.setBalance(String.valueOf(account.getBalance()));
         dto.setCurrency(account.getCurrency());
         dto.setStatus(account.getStatus());
         dto.setCreatedAt(account.getCreatedAt());

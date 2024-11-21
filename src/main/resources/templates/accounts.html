@@ -14,6 +14,7 @@
             <th>Номер счета</th>
             <th>Тип счета</th>
             <th>Баланс</th>
+            <th>Валюта</th>
             <th>Статус</th>
             <th>Дата выпуска</th>
             <th>Дата обновления</th>
@@ -35,6 +36,9 @@
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#transferModal">
         Перевести средства
     </button>
+    <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#depositModal">
+        Пополнить счёт
+    </button>
 </div>
 
 <!-- Modal -->
@@ -48,18 +52,60 @@
             <div class="modal-body">
                 <form th:action="@{/transfer}" method="post">
                     <div class="mb-3">
-                        <label for="fromaccount" class="form-label">Источник (Номер счета)</label>
-                        <input type="text" class="form-control" id="fromaccount" name="fromaccount" placeholder="Введите номер счета-источника" required>
-                    </div>
+                        <label for="fromAccount" class="form-label">Источник (Номер счета)</label>
+                        <select name="fromAccountId" class="form-select" id="fromAccount" required>
+                            <option value="" disabled selected>Выберите счёт</option>
+                            <option th:each="account : ${accountList}"
+                                    th:value="${account.id}"
+                                    th:text="${account.accountNumber}">
+                            </option>
+                        </select>
+                        </div>
                     <div class="mb-3">
                         <label for="toaccount" class="form-label">Получатель (Номер счета)</label>
-                        <input type="text" class="form-control" id="toaccount" name="toaccount" placeholder="Введите номер счета-получателя" required>
+                        <select name="toaccount" class="form-select" id="toaccount" required>
+                            <option value="" disabled selected>Выберите счёт</option>
+                            <option th:each="account : ${accountList}"
+                                    th:value="${account.id}"
+                                    th:text="${account.accountNumber}">
+                            </option>
+                        </select>
+                      </div>
+                    <div class="mb-3">
+                        <label for="transferAmount" class="form-label">Сумма</label>
+                        <input type="number" class="form-control" id="transferAmount" name="amount" placeholder="Введите сумму перевода" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Перевести</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Deposit Modal -->
+<div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="depositModalLabel">Пополнение счёта</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form th:action="@{/accounts/deposit}" method="post">
+                    <div class="mb-3">
+                        <label for="depositAccount" class="form-label">Счёт</label>
+                        <select name="accountId" class="form-select" id="depositAccount" required>
+                            <option value="" disabled selected>Выберите счёт</option>
+                            <option th:each="account : ${accountList}"
+                                    th:value="${account.id}"
+                                    th:text="${account.accountNumber}">
+                            </option>
+                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="amount" class="form-label">Сумма</label>
-                        <input type="number" class="form-control" id="amount" name="amount" placeholder="Введите сумму перевода" required>
+                        <input type="number" class="form-control" id="amount" name="amount" placeholder="Введите сумму пополнения" required>
                     </div>
-                    <button type="submit" class="btn btn-success">Перевести</button>
+                    <button type="submit" class="btn btn-secondary">Пополнить</button>
                 </form>
             </div>
         </div>

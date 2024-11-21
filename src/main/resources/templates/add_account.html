@@ -15,13 +15,13 @@
                     <label for="accountType" class="form-label">Тип счёта</label>
                     <select name="accountType" th:field="*{accountType}" class="form-select" id="accountType" required>
                         <option value="" disabled selected>Выберите тип счёта</option>
-                        <option value="Debit">Current</option>
+                        <option value="Current">Current</option>
                         <option value="Savings">Savings</option>
                         <option value="Credit">Credit</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="currency" class="form-label">Тип счёта</label>
+                    <label for="currency" class="form-label">Валюта</label>
                     <select name="currency" th:field="*{currency}" class="form-select" id="currency" required>
                         <option value="" disabled selected>Выберите валюту</option>
                         <option value="RUB">RUB</option>

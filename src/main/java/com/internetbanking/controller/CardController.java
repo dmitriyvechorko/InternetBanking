@@ -127,7 +127,7 @@ public class CardController {
         Card fromCard = fromCardOpt.get();
         Card toCard = toCardOpt.get();
         try {
-            transactionService.transferFunds(fromCard.getId(), toCard.getId(), amount);
+            transactionService.transferCardFunds(fromCard.getId(), toCard.getId(), amount);
             model.addAttribute("success", "Перевод успешен");
         } catch (Exception e) {
             model.addAttribute("error", "Ошибка при переводе: " + e.getMessage());
@@ -143,7 +143,7 @@ public class CardController {
         cardDto.setCardType(card.getCardType());
         cardDto.setExpirationDate(card.getExpirationDate());
         cardDto.setCvv(card.getCvv());
-        cardDto.setBalance(card.getBalance());
+        cardDto.setBalance(String.valueOf(card.getBalance()));
         cardDto.setStatus(String.valueOf(card.getStatus()));
         cardDto.setIssuedAt(card.getIssuedAt());
         cardDto.setUpdatedAt(card.getUpdatedAt());

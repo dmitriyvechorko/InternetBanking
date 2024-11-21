@@ -1,5 +1,6 @@
 package com.internetbanking.entity;
 
+import com.internetbanking.enums.CardStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
@@ -28,8 +29,7 @@ public class Account {
     @Column(name = "account_type", nullable = false, length = 20)
     private String accountType;
 
-    @Column(nullable = false, precision = 15, scale = 2)
-    @DecimalMin(value = "0.00", inclusive = false)
+    @Column(precision = 15, scale = 2, columnDefinition = "DECIMAL(15,2) DEFAULT 0.00")
     private BigDecimal balance;
 
     @Column(nullable = false, length = 3)
@@ -54,6 +54,5 @@ public class Account {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
-
 }
 
